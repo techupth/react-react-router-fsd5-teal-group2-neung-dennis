@@ -1,6 +1,43 @@
+import axios from "axios";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 function CreateProductForm() {
+  const baseURL = "http://localhost:4001/products";
+
+  const navigate = useNavigate();
+
+  const [product, setProduct] = useState({
+    name: "",
+    image: "",
+    price: 0,
+    description: "",
+  });
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setProduct({
+      ...product,
+      [name]: value,
+    });
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    axios
+      .post(baseURL, product)
+      .then((response) => {
+        console.log(response);
+        console.log(response.data);
+        navigate("/");
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
+
   return (
-    <form className="product-form">
+    <form className="product-form" onSubmit={handleSubmit}>
       <h1>Create Product Form</h1>
       <div className="input-container">
         <label>
@@ -10,7 +47,8 @@ function CreateProductForm() {
             name="name"
             type="text"
             placeholder="Enter name here"
-            onChange={() => {}}
+            value={product.name}
+            onChange={handleChange}
           />
         </label>
       </div>
@@ -22,7 +60,8 @@ function CreateProductForm() {
             name="image"
             type="text"
             placeholder="Enter image url here"
-            onChange={() => {}}
+            value={product.image}
+            onChange={handleChange}
           />
         </label>
       </div>
@@ -34,7 +73,8 @@ function CreateProductForm() {
             name="price"
             type="number"
             placeholder="Enter price here"
-            onChange={() => {}}
+            value={product.price}
+            onChange={handleChange}
           />
         </label>
       </div>
@@ -46,7 +86,8 @@ function CreateProductForm() {
             name="description"
             type="text"
             placeholder="Enter description here"
-            onChange={() => {}}
+            value={product.description}
+            onChange={handleChange}
             rows={4}
             cols={30}
           />
