@@ -185,3 +185,7 @@ button {
   outline: none;
   border: 5px solid var(--secondary-color);
 }
+
+a {
+  text-decoration: none;
+}
