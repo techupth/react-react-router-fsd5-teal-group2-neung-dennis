@@ -1,13 +1,26 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 function HomePage() {
   const [products, setProducts] = useState([]);
   const [isError, setIsError] = useState(null);
   const [isLoading, setIsLoading] = useState(null);
+  const { productID } = useParams();
 
   const navigate = useNavigate();
+
+  const handleDelete = async (id) => {
+    try {
+      setIsError(false);
+      setIsLoading(true);
+      await axios.delete(`http://localhost:4001/products/${id}`);
+      setIsLoading(false);
+      getProducts();
+    } catch (error) {
+      setIsError(true);
+    }
+  };
 
   const getProducts = async () => {
     try {
@@ -21,23 +34,10 @@ function HomePage() {
     }
   };
 
-  const deleteProduct = (event) => {
-    event.preventDefault();
-    axios
-      .delete(baseURL)
-      .then((response) => {
-        console.log(response);
-        console.log(response.data);
-        navigate("/");
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  };
-
   useEffect(() => {
     getProducts();
-  }, []);
+  }, [productID]);
+
   return (
     <div>
       <div className="app-wrapper">
@@ -49,7 +49,7 @@ function HomePage() {
       <div className="product-list">
         {products.map((product) => {
           return (
-            <div className="product">
+            <div key={product.id} className="product">
               <div className="product-preview">
                 <img
                   src="https://via.placeholder.com/250/250"
@@ -65,18 +65,24 @@ function HomePage() {
                 <div className="product-actions">
                   <button
                     className="view-button"
-                    onClick={() => navigate(`/product/view/${product._id}`)}>
+                    onClick={() => navigate(`/product/view/${product.id}`)}>
                     View
                   </button>
                   <button
                     className="edit-button"
-                    onClick={() => navigate(`/product/edit/${product._id}`)}>
+                    onClick={() => navigate(`/product/edit/${product.id}`)}>
                     Edit
                   </button>
                 </div>
               </div>
 
-              <button className="delete-button">x</button>
+              <button
+                className="delete-button"
+                onClick={() => {
+                  handleDelete(product.id);
+                }}>
+                x
+              </button>
             </div>
           );
         })}

@@ -3,14 +3,17 @@ import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 
 function ViewProductPage() {
-  const { productID } = useParams();
-  const [product, setProduct] = useState(null);
+  const params = useParams();
+  const productID = params.productID;
+  console.log(params);
+  const [product, setProduct] = useState();
 
   useEffect(() => {
-    // ดึงข้อมูลสินค้าจาก API โดยใช้ productID
     const fetchProduct = async () => {
       try {
-        const response = await axios.get(`http://localhost:4001/products/:id`);
+        const response = await axios.get(
+          `http://localhost:4001/products/${productID}`
+        );
         setProduct(response.data);
       } catch (error) {
         console.error("Error fetching product:", error);
@@ -25,8 +28,8 @@ function ViewProductPage() {
       <h1>View Product Page</h1>
       {product ? (
         <div className="view-product-container">
-          <h2>{product.name}</h2>
-          <p>{product.description}</p>
+          <h2>{product.data.name}</h2>
+          <p>{product.data.description}</p>
         </div>
       ) : (
         <p>Loading...</p>
